@@ -1,9 +1,13 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setSortOrder, setSearchQuery, deleteBooks } from '@/features/books/booksSlice';
-import { SortField, SortOrder } from '@/features/books/types';
+import type { SortField, SortOrder } from '@/features/books/types';
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  onAddClick: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ onAddClick }) => {
   const dispatch = useAppDispatch();
   const { searchQuery, selectedBookIds } = useAppSelector(state => state.books);
 
@@ -60,9 +64,9 @@ export const Header: React.FC = () => {
           </button>
         )}
 
-        {/* 新增按钮 */}
+        {/* 新增按钮：直接触发父组件传下来的 onAddClick */}
         <button
-          onClick={() => alert('新增弹窗将在 Phase 4 中实现！')}
+          onClick={onAddClick}
           className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm shadow-sm hover:shadow flex items-center gap-2"
         >
           <span>+</span> 添加书籍

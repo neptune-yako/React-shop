@@ -1,5 +1,5 @@
 import React from 'react';
-import { IBook } from '../types';
+import type { IBook } from '../types';
 
 interface BookItemProps {
   book: IBook;
