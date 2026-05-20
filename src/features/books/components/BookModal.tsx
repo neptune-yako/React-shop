@@ -3,12 +3,25 @@ import { useAppDispatch } from '@/store/hooks';
 import { addBook, updateBook } from '../booksSlice';
 import type { IBook } from '../types';
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 interface BookModalProps {
   book?: IBook;
+  isOpen: boolean;
   onClose: () => void;
 }
 
-export const BookModal: React.FC<BookModalProps> = ({ book, onClose }) => {
+export const BookModal: React.FC<BookModalProps> = ({ book, isOpen, onClose }) => {
   const dispatch = useAppDispatch();
   const isEditMode = !!book;
 
@@ -31,8 +44,16 @@ export const BookModal: React.FC<BookModalProps> = ({ book, onClose }) => {
         category: book.category,
         description: book.description || '',
       });
+    } else {
+      setFormData({
+        title: '',
+        author: '',
+        price: '',
+        category: '',
+        description: '',
+      });
     }
-  }, [book]);
+  }, [book, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,49 +97,92 @@ export const BookModal: React.FC<BookModalProps> = ({ book, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-50/80">
-          <h2 className="text-xl font-bold text-gray-800">
-            {isEditMode ? '📝 编辑图书' : '✨ 新增图书'}
-          </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-            ✕
-          </button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>{isEditMode ? '编辑图书' : '新增图书'}</DialogTitle>
+        </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">书名 <span className="text-red-500">*</span></label>
-            <input name="title" value={formData.title} onChange={handleChange} required className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500/50 outline-none transition-all" placeholder="例如：React 实战" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">作者 <span className="text-red-500">*</span></label>
-            <input name="author" value={formData.author} onChange={handleChange} required className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500/50 outline-none transition-all" placeholder="例如：张三" />
-          </div>
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">价格 (¥) <span className="text-red-500">*</span></label>
-              <input name="price" type="number" step="0.01" min="0" value={formData.price} onChange={handleChange} required className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500/50 outline-none transition-all" placeholder="例如：99.9" />
-            </div>
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">分类 <span className="text-red-500">*</span></label>
-              <input name="category" value={formData.category} onChange={handleChange} required className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500/50 outline-none transition-all" placeholder="例如：计算机科学" />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">简介</label>
-            <textarea name="description" value={formData.description} onChange={handleChange} rows={3} className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500/50 outline-none resize-none transition-all" placeholder="选填，简要描述该书内容..." />
+        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="title">
+              书名 <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="例如：React 实战"
+            />
           </div>
           
-          <div className="flex justify-end gap-3 mt-6">
-            <button type="button" onClick={onClose} className="px-5 py-2 border text-gray-600 font-medium rounded-md hover:bg-gray-50 transition-colors">取消</button>
-            <button type="submit" className="px-5 py-2 bg-blue-600 font-medium text-white rounded-md hover:bg-blue-700 shadow-sm transition-colors">
-              {isEditMode ? '保存修改' : '确认添加'}
-            </button>
+          <div className="space-y-2">
+            <Label htmlFor="author">
+              作者 <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="author"
+              name="author"
+              value={formData.author}
+              onChange={handleChange}
+              placeholder="例如：张三"
+            />
           </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="price">
+                价格 (¥) <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="price"
+                name="price"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.price}
+                onChange={handleChange}
+                placeholder="例如：99.9"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="category">
+                分类 <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                placeholder="例如：计算机科学"
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="description">简介</Label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={3}
+              className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
+              placeholder="选填，简要描述该书内容..."
+            />
+          </div>
+          
+          <DialogFooter className="pt-4">
+            <DialogClose asChild>
+              <Button type="button" variant="outline">取消</Button>
+            </DialogClose>
+            <Button type="submit">
+              {isEditMode ? '保存修改' : '确认添加'}
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

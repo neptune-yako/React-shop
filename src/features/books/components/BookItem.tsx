@@ -1,5 +1,11 @@
 import React from 'react';
+import { Pencil, Trash2 } from "lucide-react";
 import type { IBook } from '../types';
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface BookItemProps {
   book: IBook;
@@ -17,41 +23,52 @@ export const BookItem: React.FC<BookItemProps> = ({
   onDelete,
 }) => {
   return (
-    <div className={`flex items-center justify-between p-4 bg-white border rounded-lg shadow-sm hover:shadow-md transition-all ${isSelected ? 'border-blue-400 bg-blue-50/30' : 'border-gray-200'}`}>
-      <div className="flex items-center gap-4 overflow-hidden">
-        <input
-          type="checkbox"
-          className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer flex-shrink-0"
-          checked={isSelected}
-          onChange={() => onToggleSelect(book.id)}
-        />
-        <div className="truncate">
-          <h3 className="text-lg font-semibold text-gray-800 truncate">{book.title}</h3>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {book.author} <span className="mx-1 text-gray-300">|</span> 
-            <span className="text-blue-600 font-medium font-mono">¥{book.price.toFixed(2)}</span> 
-            <span className="mx-1 text-gray-300">|</span> 
-            <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs">{book.category}</span>
-          </p>
-          {book.description && (
-            <p className="text-sm text-gray-400 mt-1.5 truncate">{book.description}</p>
-          )}
+    <Card className={`transition-all hover:shadow-md ${isSelected ? 'border-primary bg-primary/5' : ''}`}>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 overflow-hidden flex-1">
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={() => onToggleSelect(book.id)}
+              className="flex-shrink-0"
+            />
+            <div className="truncate min-w-0">
+              <h3 className="text-lg font-semibold truncate">{book.title}</h3>
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                <span className="text-sm text-muted-foreground">{book.author}</span>
+                <span className="text-muted-foreground">·</span>
+                <Badge variant="secondary" className="font-mono">
+                  ¥{book.price.toFixed(2)}
+                </Badge>
+                <Badge variant="outline">{book.category}</Badge>
+              </div>
+              {book.description && (
+                <p className="text-sm text-muted-foreground mt-2 truncate">{book.description}</p>
+              )}
+            </div>
+          </div>
+          <div className="flex gap-2 flex-shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onEdit(book)}
+              className="gap-1"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              编辑
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onDelete(book.id)}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              删除
+            </Button>
+          </div>
         </div>
-      </div>
-      <div className="flex gap-2 flex-shrink-0 ml-4">
-        <button
-          onClick={() => onEdit(book)}
-          className="px-4 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 rounded hover:bg-blue-100 transition-colors"
-        >
-          编辑
-        </button>
-        <button
-          onClick={() => onDelete(book.id)}
-          className="px-4 py-1.5 text-sm font-medium text-red-600 bg-red-50 rounded hover:bg-red-100 transition-colors"
-        >
-          删除
-        </button>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
